@@ -6,6 +6,7 @@
   padding-left: 40px;
   padding-right: 40px;
   background-color: #202020;
+  position: sticky;
 }
 
 .logo-header-container {

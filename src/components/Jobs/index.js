@@ -27,6 +27,29 @@ const employmentTypesList = [
   },
 ]
 
+const locationsList = [
+  {
+    label: 'Hyderabad',
+    locationId: 'HYDERABAD',
+  },
+  {
+    label: 'Bangalore',
+    locationId: 'BANGALORE',
+  },
+  {
+    label: 'Chennai',
+    locationId: 'CHENNAI',
+  },
+  {
+    label: 'Delhi',
+    locationId: 'DELHI',
+  },
+  {
+    label: 'Mumbai',
+    locationId: 'MUMBAI',
+  },
+]
+
 const salaryRangesList = [
   {
     salaryRangeId: '1000000',
@@ -53,6 +76,7 @@ class Jobs extends Component {
     searchInput: '',
     selectedEmploymentTypes: [],
     selectedSalaryRange: '',
+    selectedLocation: [],
     noJobsFound: false,
     isLoading: false,
     hasProfileError: false,
@@ -68,9 +92,9 @@ class Jobs extends Component {
     this.setState({isLoading: true, hasProfileError: false})
     const jwtToken = Cookies.get('jwt_token')
 
-    if (jwtToken === undefined) {
-      return
-    }
+    // if (jwtToken === undefined) {
+    //   return <Redirect to="/login" />
+    // }
     const url = 'https://apis.ccbp.in/profile'
     const options = {
       method: 'GET',
@@ -103,10 +127,12 @@ class Jobs extends Component {
       searchInput,
       selectedEmploymentTypes,
       selectedSalaryRange,
+      selectedLocation,
     } = this.state
     const employmentFilter = selectedEmploymentTypes.join(',')
     const salaryFilter = selectedSalaryRange
-    const url = `https://apis.ccbp.in/jobs?employment_type=${employmentFilter}&minimum_package=${salaryFilter}&search=${searchInput}`
+    const locationFilter = selectedLocation.join(',')
+    const url = `https://apis.ccbp.in/jobs?employment_type=${employmentFilter}&minimum_package=${salaryFilter}&search=${searchInput}&location=${locationFilter}`
     const jwtToken = Cookies.get('jwt_token')
     const options = {
       method: 'GET',
@@ -144,6 +170,18 @@ class Jobs extends Component {
         selectedEmploymentTypes: checked
           ? [...prevState.selectedEmploymentTypes, id]
           : prevState.selectedEmploymentTypes.filter(type => type !== id),
+      }),
+      this.getSearchResults,
+    )
+  }
+
+  onChangeLocation = event => {
+    const {id, checked} = event.target
+    this.setState(
+      prevState => ({
+        selectedLocation: checked
+          ? [...prevState.selectedLocation, id]
+          : prevState.selectedLocation.filter(loc => loc !== id),
       }),
       this.getSearchResults,
     )
@@ -251,6 +289,27 @@ class Jobs extends Component {
                 </li>
               ))}
             </ul>
+            <hr className="options-seperator" />
+            <h1 className="location-heading">Location</h1>
+            <div className="location-filters-container">
+              <ul className="location-container">
+                {locationsList.map(item => (
+                  <li key={item.locationId}>
+                    <input
+                      type="checkbox"
+                      id={item.locationId}
+                      onChange={this.onChangeLocation}
+                    />
+                    <label
+                      htmlFor={item.locationId}
+                      className="location-list-item"
+                    >
+                      {item.label}
+                    </label>
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
           <div className="search-and-info-container">
             <div className="search-container">
